@@ -1,40 +1,24 @@
-import altair as alt
-import numpy as np
-import pandas as pd
-import streamlit as st
+import datetime
 
-"""
-# Welcome to Streamlit!
+def get_clutch_info():
+    lay_date_str = input("When did the clutch lay? (MM/DD/YY): ")
+    average_days_to_pip = int(input("What is your average total days before pip?: "))
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+    # Convert the lay date string to a datetime object
+    try:
+        lay_date = datetime.datetime.strptime(lay_date_str, "%m/%d/%y")
+    except ValueError:
+        print("Error: The date format should be MM/DD/YY")
+        return
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+    # Calculate the expected hatching date
+    expected_hatch_date = lay_date + datetime.timedelta(days=average_days_to_pip)
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+    # Format the expected hatching date as MM/DD/YY
+    expected_hatch_date_str = expected_hatch_date.strftime("%m/%d/%y")
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+    print(f"Based on your average days to pip, you should expect the clutch to pip on {expected_hatch_date_str}")
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+if __name__ == "__main__":
+    get_clutch_info()
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
-
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
